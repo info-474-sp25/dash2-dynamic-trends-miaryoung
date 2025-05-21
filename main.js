@@ -35,6 +35,7 @@ d3.csv("weather.csv").then(data => {
         && d.month != null
         && d.temp != null
         && d.year === 2014
+        && d.city === "Chicago"
     );
     
 // GROUP DATA
