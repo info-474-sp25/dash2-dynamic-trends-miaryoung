@@ -71,6 +71,7 @@ d3.csv("weather.csv").then(data => {
     .sort((a, b) => a.month - b.month);
 
     // 3.a: SET SCALES FOR CHART 1
+
     let xMonth = d3.scaleLinear()
     .domain([7, d3.max(dataArr, d => d.month)])
     .range([0, width]);
@@ -92,22 +93,34 @@ d3.csv("weather.csv").then(data => {
         .attr("fill", "none");
 
     // 5.a: ADD AXES FOR CHART 1
+    // svg1_line.append("g")
+    //     .attr("transform", `translate(0,${height})`)
+    //     .call(d3.axisBottom(xMonth)
+    //     .tickFormat(d3.format("d"))
+    //     		     .tickValues(d3.range(
+    //             	d3.min(dataArr, d => d.month),
+    //             	d3.max(dataArr, d => d.month) + 1
+    //         ))
+
+    
+    // );
+
+    const monthMap = {
+        7: "July", 8: "August",
+        9: "September", 10: "October", 11: "November", 12: "December"
+        };
+
     svg1_line.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(xMonth)
-        .tickFormat(d3.format("d"))
-        		     .tickValues(d3.range(
-                	d3.min(dataArr, d => d.month),
-                	d3.max(dataArr, d => d.month) + 1
-            ))
-
-    
-    );
+        .tickFormat(d => monthMap[d] || d)
+    )
 
      svg1_line.append("g")
         .call(d3.axisLeft(yTemp)
          .tickFormat(d => d )
     );
+
 
     // 6.a: ADD LABELS FOR CHART 1
     // svg1_line.append("text")
