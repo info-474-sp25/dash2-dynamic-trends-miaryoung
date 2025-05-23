@@ -111,10 +111,10 @@ d3.csv("weather.csv").then(data => {
         };
 
     svg1_line.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xMonth)
-        .tickFormat(d => monthMap[d] || d)
-    )
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(xMonth)
+    .tickFormat(d => monthMap[d] || "")
+    );
 
      svg1_line.append("g")
         .call(d3.axisLeft(yTemp)
