@@ -21,6 +21,22 @@
         <div class="item"><!-- Your widget 1 code goes here. -->
             <!-- Widget 1 title -->
             <!-- Widget 1 element -->
+             <div class="widget">
+            <label for="categorySelect">Select City:</label>
+
+            <div class="select-container">
+                <select id="categorySelect">
+                    <option value="Chicago">Chicago</option>
+                    <option value="Jacksonville">Jacksonville</option>
+                    <option value="Phoenix">Phoenix</option>
+                    <option value="Philadelphia">Philadelphia</option>
+                    <option value="Indianapolis">Indianapolis</option>
+                    <option value="Charlotte">Charlotte</option>
+                    <!-- More options go here -->
+                </select>                    
+            </div>
+        </div>
+        </div>
         </div>
 
         <!-- DELETE THE FOLLOWING DIV IF YOU ONLY HAVE 1 WIDGET. -->
@@ -32,7 +48,7 @@
 
     <!-- CHART(S) -->
     <div class="item chart-container">
-        <h2>Average Temperature Overtime in Chicago (2014)</h2>
+        <h2>Average Temperature Overtime by City (2014)</h2>
         <svg id="lineChart1" width="900" height="400"></svg> <!-- If you change this ID name, you must change it in main.js too -->
     </div>
     <!-- DELETE THE FOLLOWING DIV IF YOU ONLY HAVE 1 CHART. -->
