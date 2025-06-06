@@ -29,15 +29,21 @@ d3.csv("weather.csv").then(data => {
         d.month = new Date(d.date).getMonth() + 1;
         d.temp = +d.actual_mean_temp;
     })
-    console.log("data:", data);
+    //console.log("data:", data);
 
     const filteredData1 = data.filter(d => d.year != null
         && d.month != null
         && d.temp != null
         && d.year === 2014
     );
-    console.log("filtered data1:", filteredData1);
-    
+
+    const filteredData2 = data.filter(d => d.year != null
+        && d.month != null
+        && d.temp != null
+    );
+
+    //console.log("filtered data1:", filteredData1);
+    //console.log("filtered data2:", filteredData2);
 // GROUP DATA
     const groupedData1 = d3.groups(filteredData1, d => d.city, d => d.month)
     .map(([city, month]) => ({
@@ -48,7 +54,12 @@ d3.csv("weather.csv").then(data => {
         }))
     }));
 
-    console.log("Grouped data 1:", groupedData1);
+    const groupedData2 = d3.rollup(filteredData2, // takes from not null data
+        v => d3.mean(v, d=> d.average_precipitation), //take the average of the scores
+        d => d.city // category = director
+    );
+
+    // console.log("Grouped data 1:", groupedData1);
 // FLATTEN DATA
     const flattenedData = groupedData1.flatMap(({ city, values}) =>
         values.map(({ month, avgTemp}) => ({
@@ -58,8 +69,13 @@ d3.csv("weather.csv").then(data => {
         }))
     );
 
-    console.log("Final flattened data:", flattenedData);
+    const flattenedData2 = Array.from(groupedData2,
+        ([city, average_precipitation]) => ({city,average_precipitation})
+        )
+        .sort((a, b) => b.average_precipitation - a.average_precipitation);
 
+    // console.log("Final flattened data:", flattenedData);
+    console.log("Final flattened data2:", flattenedData2);
     const cities = d3.rollup(filteredData1,
         v => d3.rollup(v,
                 values => values.length,
@@ -68,7 +84,7 @@ d3.csv("weather.csv").then(data => {
         d => d.city
     );
 
-    console.log("cities:", cities);
+    // console.log("cities:", cities);
 
     // 3.a: SET SCALES FOR CHART 1
 
@@ -83,7 +99,7 @@ d3.csv("weather.csv").then(data => {
     filteredFlattenedData = flattenedData.filter(d => d.city === "Chicago");
     filteredFlattenedData.sort((a, b) => a.month - b.month);
 
-    console.log("filteredFlattenedData:", filteredFlattenedData);
+    // console.log("filteredFlattenedData:", filteredFlattenedData);
 
     // 4.a: PLOT DATA FOR CHART 1
 
@@ -269,18 +285,51 @@ d3.csv("weather.csv").then(data => {
     // ==========================================
 
     // 3.b: SET SCALES FOR CHART 2
-
+    const xBarScale = d3.scaleBand()
+        .domain(flattenedData2.map(d => d.city)) // Use city names as categories
+        .range([0, width])
+        .padding(0.1); // Add space between bars
+    
+    const yBarScale = d3.scaleLinear()
+        .domain([0, d3.max(flattenedData2, d => d.average_precipitation)])
+        .range([height, 0]); // START high, DECREASE
 
     // 4.b: PLOT DATA FOR CHART 2
+    svg2_bar.selectAll("rect")
+        .data(flattenedData2)
+        .enter()
+        .append("rect")
+        .attr("x", d => xBarScale(d.city)) // horizontal position
+        .attr("y", d => yBarScale(d.average_precipitation)) // vertical position
+        .attr("width", xBarScale.bandwidth())
+        .attr("height", d => height - yBarScale(d.average_precipitation))
+        .attr("fill", "blue")
+        ;
 
+    // 5.a: ADD AXES FOR CHART 
+    svg2_bar.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xBarScale));
 
-    // 5.b: ADD AXES FOR CHART 
-
+    // 5.b: Y-axis (Gross)
+    svg2_bar.append("g")
+    .call(d3.axisLeft(yBarScale));
 
     // 6.b: ADD LABELS FOR CHART 2
-
-
-    // 7.b: ADD INTERACTIVITY FOR CHART 2
+    // 6.a: X-axis (Cities)
+    svg2_bar.append("text")
+        .attr("class", "axis-label")
+        .attr("x", width / 2) // This is correct for the inner chart area
+        .attr("y", height + (margin.bottom / 2) + 10 )
+        //.attr("text-anchor", "middle") // Add this for perfect centering
+        .text("Cities");
+    //Y-axis label (Total Gross)
+    svg2_bar.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)") // Rotate for vertical label
+        .attr("y", (-margin.left / 2) - 10) // Adjust for margin
+        .attr("x", -height / 2) // Center vertically
+        .text("Average Precipitation (inches)");
 
 
 });
